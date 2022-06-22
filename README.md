@@ -15,11 +15,10 @@ Proxmox 7.2-4, Create CT, Debian 11.0-1 (LXC base Image available from Proxmox).
 
 
   
-First we'll do an update of the container. 
-  
-
+#First we'll do an update of the container. 
+ ```
 apt update && apt upgrade -y && apt -autoremove 
-
+```
 
 This is the install for the CT to allow it to act as a Server for your Magic Mirror. as were using a CT its core is stripped of the usual tools you will find in Debian OS, so we'll need to install "Sudo", "Curl", "Wget", "Git", "Build Essentials", "unzip", "GCC", "G++" and finally "Make"
   
