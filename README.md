@@ -231,7 +231,7 @@ because now we need to create/modify xorg.conf. Chances are itll be a create bec
 sudo nano /etc/X11/xorg.conf
 ```
 Identifier and Device are the figures you noted from your --verbose output earlier. If theyre different than mine, adjust as required.
-````
+```
 Section "Screen"
         Identifier "Screen 0"
         Device "HDMI-1"
