@@ -1,20 +1,24 @@
 # Magic-Mirror
 Proxmox CT Server, Raspberry Pi0 Client
 
-Im going to assume that IF youre setting MagicMirror up this way, then youre comfortable with creating a CT in Proxmox AND are able to SSH into a RPi after SDCard creation
+I'm going to assume that IF youre setting MagicMirror up this way, then you're comfortable with creating a CT in Proxmox AND are able to SSH into a RPi after SDCard creation as well as assigning static IPs to your kit/CTs.
+
+Here is the process i used to create a containered MM Server and an MM Client utilising a Raspberry Pi0 (rev1.2). For the next couple of months i may add to this as i find more streamlined ways of doing things via suggestions/research but **please only consider this info accurate up to June 2022.** I'm a n00b and I'll for get this is here unless I get an email for something i did wrong, soo yeah bear that in mind ;)
 
 
-Walk throughs i am duplicating here, incase sources disappear, i take no credit for the creation of these.
+Walkthroughs I am duplicating here, incase sources disappear, I take no credit for the creation/deletion of these.
 
-https://forum.magicmirror.builders/topic/11003/getting-mm-running-on-debian-10-not-on-a-rpi
+[Server (MM Forum)](https://forum.magicmirror.builders/topic/11003/getting-mm-running-on-debian-10-not-on-a-rpi "Server (MM Forum)")
 
-https://reelyactive.github.io/diy/pi-kiosk/
+[Client (github.io)](https://reelyactive.github.io/diy/pi-kiosk/ "Client (github.io)")
+
+[Auto Login (Proxmox Forum Post)](https://forum.proxmox.com/threads/is-it-possible-to-have-containers-auto-login-on-the-web-gui-like-the-node.62097/post-391377 "Auto Login (Proxmox Forum Post)")
 
 ------------
 
 ## LXC / Proxmox CT Server Setup
 
-**Proxmox 7.2-4, Create CT, Debian 11.0-1 (LXC base Image available from Proxmox)... 4GiB disk, 256MiB Mem, 1CPU Core, Unprividlege = No, Nesting = 1 (after CT generation)**
+**Proxmox 7.2-4, Create CT, Debian 11.0-1 (LXC base Image available from Proxmox)... 4GiB disk, 256MiB Mem, 1CPU Core, Unprividlege = No, Nesting = 1 (after CT generation), Network = enabled, Static IP preferable**
 
 ------------
 First we'll do an update of the container. 
@@ -91,10 +95,78 @@ To exit the 'node serveronly' script just Ctrl+C back to CLI
 
 ------------
 
+### **OPTIONAL** Auto login for CT
+
+I wanted mine to auto login and run the script, for instance after a PVE reboot/shutdown, here's how i did it. N.B. make sure you have a password setup for @root for security reasons.
+
+```
+systemctl edit container-getty@.service
+```
+
+insert
+```
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud tty%I 115200,38400,9600 $TERM
+```
+
+### **OPTIONAL** Autorun at CT Start & Restart on Node Crash
+This wont auto restart if "node serveronly" hangs/freezes. Only restarts when "node serveronly" process is not running
+
+create autorun file in /root dir
+```
+touch /root/autorun
+```
+
+```
+nano /root/autorun
+```
+
+insert
+```
+#!/bin/sh
+cd /root/MagicMirror
+
+while true
+do 
+    node serveronly
+    sleep 10
+done
+```
+
+**test to see if it works**
+```
+/root/autorun
+```
+launch web browser and navigate to server IP. you should see MM output.
+
+
+we can force kill "node serveronly" with 
+```
+kill -s SIGINT $(pidof node)
+```
+refresh browswer window within 10sec and you should see a "page not available" then refresh after 10 sec and MM should display again
+
+
+
+edit crontab to allow for auto-run of MM server after reboot/shutdown of CT
+```
+crontab -e
+```
+
+append with
+```
+@reboot /root/autorun
+```
+ctrl+x, y, enter
+
+reboot and confirm MM server start by refreshing browser window.
+
 
 ------------
+------------
 
-## Raspberry Pi 0 Client Setup
+# Raspberry Pi 0 Client Setup
 Now to set up the Client for attchment to your screen in you MagicMirror.
 
 Set yourself up with a Pi0/Pi0 W/Pi0 WH/Pi0 2 W, running PiOS Lite, have a WiFi Dongle attached, SSH Enabled, and your wpa-supplicant set. 
