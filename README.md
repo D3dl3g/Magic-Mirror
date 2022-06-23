@@ -240,4 +240,5 @@ Section "Screen"
         EndSubSection
 EndSection
 ```
+
 Ctrl+X, Y, Enter, to Save.  aaaand reboot. 
