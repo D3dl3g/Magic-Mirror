@@ -110,58 +110,26 @@ ExecStart=
 ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud tty%I 115200,38400,9600 $TERM
 ```
 
-### **OPTIONAL** Autorun at CT Start & Restart on Node Crash
-This wont auto restart if "node serveronly" hangs/freezes. Only restarts when "node serveronly" process is not running
-
-create autorun file in /root dir
+### **OPTIONAL** Autorun at CT Start & Restart on Crash
+For this we can use [PM2]([url](https://pm2.keymetrics.io/docs/usage/quick-start/)) a Process Manager that looks after restarts (enabled by default) and start-on-boot (using the autostart command).
 ```
-touch /root/autorun
+npm install pm2 -g && pm2 autostart
 ```
-
+now we need to give PM2 a .sh file to load in
 ```
-nano /root/autorun
+touch /root/MagicMirror/MagicMirror.sh && nano /root/MagicMirror/MagicMirror.sh
 ```
-
-insert
+only need to give this a two liner
 ```
-#!/bin/sh
-cd /root/MagicMirror
-
-while true
-do 
-    node serveronly
-    sleep 10
-done
+cd /root/MagicMirror/
+npm run server
+```
+Tell PM2 to start your .sh file as a process and pm2 save to remember your choices.
+```
+pm2 start /root/MagicMirror/MagicMirror.sh && pm2 save
 ```
 
-**test to see if it works**
-```
-/root/autorun
-```
-launch web browser and navigate to server IP. you should see MM output.
-
-
-we can force kill "node serveronly" with 
-```
-kill -s SIGINT $(pidof node)
-```
-refresh browswer window within 10sec and you should see a "page not available" then refresh after 10 sec and MM should display again
-
-
-
-edit crontab to allow for auto-run of MM server after reboot/shutdown of CT
-```
-crontab -e
-```
-
-append with
-```
-@reboot /root/autorun
-```
-ctrl+x, y, enter
-
-reboot and confirm MM server start by refreshing browser window.
-
+Reboot to confirm server comes up with CT
 
 ------------
 ------------
@@ -169,7 +137,7 @@ reboot and confirm MM server start by refreshing browser window.
 # Raspberry Pi 0 Client Setup
 Now to set up the Client for attchment to your screen in you MagicMirror.
 
-Set yourself up with a Pi0/Pi0 W/Pi0 WH/Pi0 2 W, running PiOS Lite, have a WiFi Dongle attached, SSH Enabled, and your wpa-supplicant set. 
+Set yourself up with a Pi0/Pi0 W/Pi0 WH/Pi0 2 W, running PiOS Lite, have a WiFi Dongle attached (if "non-W" varient), SSH Enabled, and your wpa-supplicant set. 
 SSH into it with user 'pi'
 
 Aim of the game here is to keep as light as we can so this is about as stripped down as i could find a 'kiosk' based walkthrough.
