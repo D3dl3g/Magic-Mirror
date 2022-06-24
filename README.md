@@ -150,6 +150,31 @@ First off, you guessed it, house keeping
  sudo apt update && sudo apt upgrade -y
  ```
 
+Disable and remove swap file. Reduces read/write wear on SD cards, i still dont know why this is default on for RPi... imho theres really no need for it given the intended use of the SBC.
+
+First we stop the swapping service:
+```
+sudo service dphys-swapfile stop
+```
+
+Then we check if the swapping is switched off:
+```
+free
+```
+
+If the “Swap” line only has “0” values, we can disable the swap service.
+```
+sudo systemctl disable dphys-swapfile
+```
+
+
+Or remove completely.
+```
+sudo apt-get purge dphys-swapfile
+```
+
+A restart is not necessary.
+
 ------------
 
 ### X11
