@@ -262,9 +262,9 @@ sadly on reboot it wont stay that way, so we want to set it to apply the new set
 
 looking back at the verbose output First 2 lines of  the output it should look alittle something like this:
 
-`**Screen 0**: minimum 320 x 200, current 1024 x 768, maximum 2048 x 2048`
+`** Screen 0 **: minimum 320 x 200, current 1024 x 768, maximum 2048 x 2048`
 
-`**HDMI-1** connected primary 1024x768+0+0 (0x53) normal (normal left inverted right x axis y axis) 797mm x 334mm`
+`** HDMI-1 ** connected primary 1024x768+0+0 (0x53) normal (normal left inverted right x axis y axis) 797mm x 334mm`
 
 Note "**Screen ***" and "**HDMI-***"
 because now we need to create/modify xorg.conf. Chances are itll be a create because it doesnt come, out of the box, with any parameters set. From what i have read, on the internet, be it true or not,  /etc/X11/xorg.conf will be, one of, if not, THE LAST file location that X11 will look for a config and its a pretty short dir tree to type, so may as well put config file there, right!
