@@ -18,12 +18,15 @@ Walkthroughs I am duplicating here, incase sources disappear, I take no credit f
 
 ## LXC / Proxmox CT Server Setup
 
-**Proxmox 7.2-4, Create CT, Debian 11.0-1 (LXC base Image available from Proxmox)... 4GiB disk, 256MiB Mem, 1CPU Core, Unprividlege = No, Nesting = 1 (after CT generation), Network = enabled, Static IP preferable**
+**Proxmox 7.2-4, Create CT, Debian 11.0-1 (LXC base Image available from Proxmox)... 4GiB disk, 256MiB Mem (memory can be dropped after install if desired i dropped mine to 128MiB), 1CPU Core, Unprivilege = No, Nesting = 1 (after CT generation), Network = enabled, Static IP preferable** 
+
+![prox](https://user-images.githubusercontent.com/48180011/175961753-b9a17946-af2f-48be-9a0c-6bdf6d6a131e.png)
+
 
 ------------
 First we'll do an update of the container. 
 ```
-apt update && apt upgrade -y && apt autoremove -y 
+apt update && apt upgrade -y
 ```
 
 ------------
@@ -33,17 +36,13 @@ To allow your CT to actually be a server for your MagicMirror. We need to instal
   
 We will need to pull the latest copy of Node.js, for install, from NodeSource. (v18.x at the time of writing this), update the repos and install.
   
-Next, we'll need NPM and Yarn (which is the bit that lets NPM and JS stuff play nicely together)
+Next, we'll need NPM (NPM Installed with nodejs, hence no 'individual' install line) and Yarn (which is the bit that lets NPM and JS stuff play nicely together)
+
 ```
-apt -y install sudo curl wget git build-essential unzip gcc g++ make
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-apt update
-apt install -y nodejs
-apt install -y npm
-curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-apt update
-apt install yarn
+apt install sudo curl wget git build-essential unzip gcc g++ make
+curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+apt install nodejs
+curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list && apt update && apt install yarn
 ```
   
 
@@ -52,7 +51,7 @@ apt install yarn
 
 Now thats all the underlying systems taken care off, its time to "git" MM.
 ```
-git clone --depth=1 https://github.com/MichMich/MagicMirror.git
+git clone https://github.com/MichMich/MagicMirror
 ```
 Change working directory to...
 ```
@@ -63,11 +62,14 @@ cd MagicMirror/
 ```
 cp config/config.js.sample config/config.js
 ```
-Now we install the NPM goodies along with an audit fix, which seems to fix any warnings that crop up, then force the latest version (at time of writing 8.12.2)
+Now we install the NPM goodies along with an audit fix, which seems to fix any warnings that crop up, then force the latest version (at time of writing 8.13.1)
+"--only=prod --omit=dev" args seem to be required as stated at MM install page.
+
+![npmold](https://user-images.githubusercontent.com/48180011/175962006-45a8ae9a-2ade-4301-9057-672047fed6a9.png)![npminstall](https://user-images.githubusercontent.com/48180011/175962021-760b9dbe-e695-4776-ad7c-0f4c26da7ff3.png)
 ```
-npm install
+npm install --only=prod --omit=dev
 npm audit fix
-npm install -g npm@8.12.2
+npm install -g npm@8.13.1
 ```
 Last little bit of housekeeping
 ```
@@ -85,18 +87,22 @@ Change the address IP to your Static IP allocation for the CT (no real NEED to d
 
 Modify the ipWhitelist entry to give any number of devices on your network access to the server. You can list any number of, comma separated, individual IPs or IP Ranges, also dont forget the "" marks around your IP entries.
 
-Good job on opening your server to the network!
+![config](https://user-images.githubusercontent.com/48180011/175962259-096cac65-7d14-4219-8c06-fb7056c5d459.png)
+
+Good job on opening your server to your network!
 
 ------------
 
 
 ### Finally, start the server!!
 
-Ensure you're in "~/MagicMirror", we need to use this command and wait for the terminal to show:-
+Ensure you're in "/root/MagicMirror", we need to use this command and wait for the terminal to show:-
 "Ready to go! Please Point your browser to..."
 ```
 node serveronly
 ```
+![MMServerrunning](https://user-images.githubusercontent.com/48180011/175963138-93fae6b1-6bde-45d3-abae-35ee1ae5fef2.png)
+
 To exit the 'node serveronly' script just Ctrl+C back to CLI
 
 
@@ -116,6 +122,8 @@ insert
 ExecStart=
 ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud tty%I 115200,38400,9600 $TERM
 ```
+![autologin](https://user-images.githubusercontent.com/48180011/175963211-7ba76e74-9ffa-452d-bd70-31f50d853e70.png)
+
 
 ### **OPTIONAL** Autorun at CT Start & Restart on Crash
 For this we can use [PM2]([url](https://pm2.keymetrics.io/docs/usage/quick-start/)) a Process Manager that looks after restarts (enabled by default) and start-on-boot (using the autostart command).
@@ -137,6 +145,8 @@ pm2 start /root/MagicMirror/MagicMirror.sh && pm2 save
 ```
 
 Reboot to confirm server comes up with CT
+
+![serverstatus](https://user-images.githubusercontent.com/48180011/175962458-c95805e3-23de-4e5f-8670-ee21eee29e49.png)
 
 ------------
 ------------
