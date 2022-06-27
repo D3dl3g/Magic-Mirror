@@ -65,7 +65,9 @@ cp config/config.js.sample config/config.js
 ```
 Now we install the NPM goodies along with an audit fix, which seems to fix any warnings that crop up, then force the latest version (at time of writing 8.12.2)
 ```
-npm install && npm audit fix && npm install -g npm@8.12.2
+npm install
+npm audit fix
+npm install -g npm@8.12.2
 ```
 Last little bit of housekeeping
 ```
