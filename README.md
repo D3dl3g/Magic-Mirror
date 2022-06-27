@@ -29,15 +29,21 @@ apt update && apt upgrade -y && apt autoremove -y
 ------------
 
 ### Required Packages
-To allow your CT to actually be a server for your MagicMirror. We need to install a small handful of packages, as they dont come "pre-bundled" with your CT Image (a CT is stripped of the usual tools you will find in OS), so we'll need to install "Sudo", "Curl", "Wget" & "Git"
+To allow your CT to actually be a server for your MagicMirror. We need to install a small handful of packages, as they dont come "pre-bundled" with your CT Image (a CT is stripped of the usual tools you will find in OS), so we'll need to install "Sudo", "Curl", "Wget" & "Git" "build-essential" "unzip" "gcc" "g++" "make"
   
 We will need to pull the latest copy of Node.js, for install, from NodeSource. (v18.x at the time of writing this), update the repos and install.
   
 Next, we'll need NPM and Yarn (which is the bit that lets NPM and JS stuff play nicely together)
 ```
-apt install --no-install-recommends -y sudo curl wget git
-curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && apt update && apt install --no-install-recommends -y nodejs npm
-curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list && apt update && apt install --no-install-recommends yarn
+apt -y install curl wget git build-essential unzip gcc g++ make
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+apt update
+apt install -y nodejs
+apt install -y npm
+curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+apt update
+apt install yarn
 ```
   
 
