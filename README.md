@@ -23,7 +23,7 @@ Walkthroughs I am duplicating here, incase sources disappear, I take no credit f
 ------------
 First we'll do an update of the container. 
 ```
-apt update && apt upgrade -y && apt -autoremove -y 
+apt update && apt upgrade -y && apt autoremove -y 
 ```
 
 ------------
@@ -35,7 +35,7 @@ We will need to pull the latest copy of Node.js, for install, from NodeSource. (
   
 Next, we'll need NPM and Yarn (which is the bit that lets NPM and JS stuff play nicely together)
 ```
-apt -y install sudo curl wget git build-essential unzip gcc g++ make
+apt install --no-install-recommends -y sudo curl wget git build-essential unzip gcc g++ make
 curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && apt update && apt install -y nodejs
 apt install -y npm
 curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list && apt update && apt install yarn
@@ -64,7 +64,7 @@ npm install && npm audit fix && npm install -g npm@8.12.2
 ```
 Last little bit of housekeeping
 ```
-apt update && apt upgrade -y && apt -autoremove
+apt update && apt upgrade -y && apt autoremove -y
 ```
 
 ------------
@@ -181,7 +181,7 @@ A restart is not necessary.
 
 We need a bunch of X11 stuff since we used Pi OS Lite, to give us a GUI output to our screen. Chromium which we can set up into a "kiosk" mode later and a windows manager because we have X11 and we have a browser, but we need something inbetween... like a little raspi sandwich... xautomation and unclutter help to keep your screen free of litter
 ```
-sudo apt install --no-install-recommends xserver-xorg -y && sudo apt install --no-install-recommends xinit -y && sudo apt install --no-install-recommends x11-xserver-utils -y && sudo apt install chromium-browser -y && sudo apt install matchbox-window-manager xautomation unclutter -y
+sudo apt install --no-install-recommends -y xserver-xorg xinit x11-xserver-utils chromium-browser matchbox-window-manager unclutter
 ```
 
 ------------
