@@ -1,5 +1,5 @@
 # Magic-Mirror
-Proxmox CT Server, Raspberry Pi0 Client
+Proxmox CT Server, Raspberry Pi0/1/2/3/4 Client
 
 I'm going to assume that IF youre setting MagicMirror up this way, then you're comfortable with creating a CT in Proxmox AND are able to SSH into a RPi after SDCard creation as well as assigning static IPs to your kit/CTs.
 
@@ -151,10 +151,10 @@ Reboot to confirm server comes up with CT
 ------------
 ------------
 
-# Raspberry Pi 0 Client Setup
+# Raspberry Pi 0/1/2/3/4 Client Setup
 Now to set up the Client for attchment to your screen in you MagicMirror.
 
-Set yourself up with a Pi0/Pi0 W/Pi0 WH/Pi0 2 W, running PiOS Lite, have a WiFi Dongle attached (if "non-W" varient), SSH Enabled, and your wpa-supplicant set. 
+Set yourself up with a Pi0/Pi0 W/Pi0 WH/Pi0 2 W/Pi/Pi2/Pi3/Pi4, running PiOS Lite, have a WiFi Dongle attached (if "non-W" varient), SSH Enabled, and your wpa-supplicant set. 
 SSH into it with user 'pi'
 
 Aim of the game here is to keep as light as we can so this is about as stripped down as i could find a 'kiosk' based walkthrough.
@@ -239,7 +239,7 @@ Connect it to a screen power it up and you should see an output from your server
 
 ------------
 
-### A point worthy of note
+### A couple of points worthy of note
 
 I experienced difficulty in getting 1080p output to my display, it defaulted to 1024x768 which, spacing wise, isnt... ideal. im not 100% sure why it didnt pick the monitor up automatically. so if you do come accross this heres a solution that worked for me.
 
