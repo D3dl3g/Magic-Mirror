@@ -1,5 +1,5 @@
 # Magic-Mirror
-Proxmox CT Server, Raspberry Pi0/1/2/3/4 Client
+**Proxmox CT Server, Raspberry Pi0/1/2/3/4 Client**
 
 I'm going to assume that IF youre setting MagicMirror up this way, then you're comfortable with creating a CT in Proxmox AND are able to SSH into a RPi after SDCard creation as well as assigning static IPs to your kit/CTs.
 
@@ -22,8 +22,8 @@ Walkthroughs I am duplicating here, incase sources disappear, I take no credit f
 
 ![prox](https://user-images.githubusercontent.com/48180011/175961753-b9a17946-af2f-48be-9a0c-6bdf6d6a131e.png)
 
-
 ------------
+
 First we'll do an update of the container. 
 ```
 apt update && apt upgrade -y
@@ -45,8 +45,8 @@ apt install nodejs
 curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list && apt update && apt install yarn
 ```
   
-
 ------------
+
 ### Installing MagicMirror
 
 Now thats all the underlying systems taken care off, its time to "git" MM.
@@ -93,7 +93,6 @@ Good job on opening your server to your network!
 
 ------------
 
-
 ### Finally, start the server!!
 
 Ensure you're in "/root/MagicMirror", we need to use this command and wait for the terminal to show:-
@@ -124,6 +123,7 @@ ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud tty%I 115200,3840
 ```
 ![autologin](https://user-images.githubusercontent.com/48180011/175963211-7ba76e74-9ffa-452d-bd70-31f50d853e70.png)
 
+------------
 
 ### **OPTIONAL** Autorun at CT Start & Restart on Crash
 For this we can use [PM2]([url](https://pm2.keymetrics.io/docs/usage/quick-start/)) a Process Manager that looks after restarts (enabled by default) and start-on-boot (using the autostart command).
@@ -152,7 +152,7 @@ Reboot to confirm server comes up with CT
 ------------
 
 # Raspberry Pi 0/1/2/3/4 Client Setup
-Now to set up the Client for attchment to your screen in you MagicMirror.
+**Now to set up the Client for attchment to your screen in you MagicMirror.**
 
 Set yourself up with a Pi0/Pi0 W/Pi0 WH/Pi0 2 W/Pi/Pi2/Pi3/Pi4, running PiOS Lite, have a WiFi Dongle attached (if "non-W" varient), SSH Enabled, and your wpa-supplicant set. 
 SSH into it with user 'pi'
@@ -161,11 +161,10 @@ Aim of the game here is to keep as light as we can so this is about as stripped 
 
 ------------
 
-
 First off, you guessed it, house keeping
 ```
- sudo apt update && sudo apt upgrade -y
- ```
+sudo apt update && sudo apt upgrade -y
+```
 
 Disable and remove swap file. Reduces read/write wear on SD cards, i still dont know why this is default on for RPi... imho theres really no need for it given the intended use of the SBC.
 
@@ -231,12 +230,12 @@ xinit /home/pi/kiosk -- vt$(fgconsole)
 
 ------------
 
-
 # Fin
 THATS IT. Your client is set up now!! (aside from a quick reboot)
 
 Connect it to a screen power it up and you should see an output from your server.
 
+------------
 ------------
 
 ### A couple of points worthy of note
