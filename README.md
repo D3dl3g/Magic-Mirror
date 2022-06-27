@@ -36,9 +36,8 @@ We will need to pull the latest copy of Node.js, for install, from NodeSource. (
 Next, we'll need NPM and Yarn (which is the bit that lets NPM and JS stuff play nicely together)
 ```
 apt install --no-install-recommends -y sudo curl wget git build-essential unzip gcc g++ make
-curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && apt update && apt install -y nodejs
-apt install -y npm
-curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list && apt update && apt install yarn
+curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && apt update && apt install --no-install-recommends -y nodejs npm
+curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list && apt update && apt install --no-install-recommends yarn
 ```
   
 
