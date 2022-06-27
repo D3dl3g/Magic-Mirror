@@ -35,7 +35,7 @@ We will need to pull the latest copy of Node.js, for install, from NodeSource. (
   
 Next, we'll need NPM and Yarn (which is the bit that lets NPM and JS stuff play nicely together)
 ```
-apt -y install curl wget git build-essential unzip gcc g++ make
+apt -y install sudo curl wget git build-essential unzip gcc g++ make
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 apt update
 apt install -y nodejs
