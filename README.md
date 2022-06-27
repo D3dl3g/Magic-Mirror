@@ -79,7 +79,7 @@ apt update && apt upgrade -y && apt autoremove -y
 ### IP Settings
 To get the Server to be viewable from a Client or any web browser on your network are now going to tell the server which IP to attach itself to and which IPs are allowed to access the server.
 ```
-nano /MagicMirror/Config/config.js
+nano /root/MagicMirror/config/config.js
 ```
 Change the address IP to your Static IP allocation for the CT (no real NEED to delete the 127.x.x.x address that is there. I just wanted to remove variables when I was testing)
 
