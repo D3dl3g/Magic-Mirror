@@ -18,9 +18,9 @@ Walkthroughs I am duplicating here, incase sources disappear, I take no credit f
 
 ## LXC / Proxmox CT Server Setup
 
-**Proxmox 7.2-4, Create CT, Debian 11.0-1 (LXC base Image available from Proxmox)... 4GiB disk, 256MiB Mem (memory can be dropped after install if desired i dropped mine to 128MiB), 1CPU Core, Unprivilege = No, Nesting = 1 (after CT generation), Network = enabled, Static IP preferable** 
+**Proxmox 7.2-4, Create CT, Debian 11.0-1 (LXC base Image available from Proxmox)... 4GiB disk, 256MiB Mem & Swap , 1CPU Core, Unprivilege = No, Nesting = 1 (after CT generation), Network = enabled, Static IP preferable** 
 
-![prox](https://user-images.githubusercontent.com/48180011/175961753-b9a17946-af2f-48be-9a0c-6bdf6d6a131e.png)
+![prox](https://user-images.githubusercontent.com/48180011/176882105-dcf78824-14ce-49d2-b80b-733e473bf716.png)
 
 ------------
 
