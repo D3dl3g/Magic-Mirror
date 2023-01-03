@@ -203,7 +203,7 @@ sudo apt install --no-install-recommends -y xserver-xorg xinit x11-xserver-utils
 ------------
 
 ### Kiosk Window
-Now we setup the Kiosk display most of this is pretty uniform accross MM builds so im not explaining it
+Now we setup the Kiosk display most of this is pretty uniform accross kiosk builds so im not explaining what all the triggers do.
 
 ```
 nano ~/kiosk
