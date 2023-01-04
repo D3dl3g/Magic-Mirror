@@ -155,7 +155,11 @@ Reboot to confirm server comes up with CT
 **Now to set up the Client for attchment to your screen in you MagicMirror.**
 
 Set yourself up with a Pi0/Pi0 W/Pi0 WH/Pi0 2 W/Pi/Pi2/Pi3/Pi4, running PiOS Lite, have a WiFi Dongle attached (if "non-W" varient), SSH Enabled, and your wpa-supplicant set. 
-SSH into it with user 'pi'
+SSH into it with user 'pi',
+```
+raspi-config
+```
+Select options "1 > S5 > B2" to run console autologin at boot
 
 Aim of the game here is to keep as light as we can so this is about as stripped down as i could find a 'kiosk' based walkthrough.
 
