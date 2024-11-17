@@ -154,7 +154,7 @@ Reboot to confirm server comes up with CT
 # Raspberry Pi 0/1/2/3/4 Client Setup
 **Now to set up the Client for attchment to your screen in you MagicMirror.**
 
-Set yourself up with a Pi0/Pi0 W/Pi0 WH/Pi0 2 W/Pi/Pi2/Pi3/Pi4, running PiOS Lite, have a WiFi Dongle attached (if "non-W" varient), SSH Enabled, and your wpa-supplicant set. 
+Set yourself up with a Pi0/Pi0 W/Pi0 WH/Pi0 2 W/Pi/Pi2/Pi3/Pi4, running PiOS Lite (32-bit Legacy (armv7l), i have been unable to get this to work in 64-bit, or since the switch to Wayland as default for deb in 32 or 64), have a WiFi Dongle attached (if "non-W" varient), SSH Enabled, and your wpa-supplicant set. 
 SSH into it with user 'pi',
 ```
 sudo raspi-config
