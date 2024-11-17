@@ -227,7 +227,8 @@ Now we set the virtual terminal, so it displays properly on a physical screen.
 ```
 nano ~/.bashrc
 ```
-Insert at the bottom. dont know if it matters but its what worked for me
+Insert at the bottom. this starts the X server, and runs the script in the previously created `kiosk` file
+`/pi/` will need to be replaced with whatever your user is. if your user is `pi` then this code addition will be fine
 ```
 xinit /home/pi/kiosk -- vt$(fgconsole)
 ```
