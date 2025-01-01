@@ -4,10 +4,10 @@
 set -e
 
 # Check if the script is running on a physical console
-if [[ "$(tty)" != "/dev/tty"* ]]; then
-    echo -e "\033[0;31mThis script must be run from a physical console (not over SSH).\033[0m"
-    exit 1
-fi
+#if [[ "$(tty)" != "/dev/tty"* ]]; then
+#    echo -e "\033[0;31mThis script must be run from a physical console (not over SSH).\033[0m"
+#    exit 1
+#fi
 
 # Prompt the user for customization
 echo -e "\033[0;32m==== Kiosk Setup Script ====\033[0m"
