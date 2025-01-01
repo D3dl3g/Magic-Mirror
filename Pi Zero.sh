@@ -3,6 +3,7 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Comment out the following block to allow SSH execution
 # Check if the script is running on a physical console
 #if [[ "$(tty)" != "/dev/tty"* ]]; then
 #    echo -e "\033[0;31mThis script must be run from a physical console (not over SSH).\033[0m"
