@@ -46,9 +46,13 @@ if [ $(free | grep Swap | awk '{print $2}') -gt 0 ]; then
         echo -e "${unbold_green}Swap Disabled.${unbold}"
     fi
     # Label for removing the service
-    echo -e "${unbold_orange}Removing \"dphys-swapfile\"...${unbold}"
-    # Remove the dphys-swapfile service
-    sudo apt-get purge -y dphys-swapfile
+echo -e "${unbold_orange}Removing \"dphys-swapfile\"...${unbold}"
+
+# Remove the dphys-swapfile service
+sudo apt-get purge -y -qq dphys-swapfile > /dev/null 2>&1
+
+# Confirm successful removal
+echo -e "${unbold_green}\"dphys-swapfile\" Successfully Removed.${unbold}"
 else
     echo -e "${unbold_green}Swap is already disabled.${unbold}"
 fi
@@ -59,7 +63,7 @@ sudo apt-get update -qq && sudo apt-get upgrade -y -qq > /dev/null && echo -e "$
 
 # Install required packages (minimized output)
 echo -e "${unbold_orange}Installing necessary packages...${unbold}"
-sudo apt-get install --no-install-recommends -y -qq midori matchbox-window-manager xserver-xorg xinit x11-xserver-utils unclutter xdotool lm-sensors > /dev/null && echo -e "${unbold_green}Packages installed.${unbold}"
+sudo apt-get install --no-install-recommends -y -qq matchbox-window-manager xserver-xorg xinit x11-xserver-utils luakit unclutter lm-sensors > /dev/null && echo -e "${unbold_green}Packages installed.${unbold}"
 
 # Add one blank lines
 echo -e "\n"
@@ -92,15 +96,19 @@ xset s off     # disable screen saver
 xset s noblank # don't blank the video device
 matchbox-window-manager -use_titlebar no &
 unclutter &    # hide X mouse cursor unless mouse activated
-midori -e Fullscreen $MM_URL
+#midori -e Fullscreen $MM_URL
+luakit --kiosk --private $MM_URL
+
 
 # Wait for 30 seconds
-sleep 30
+#sleep 60
 
 # Send two F11 key presses
-xdotool key F11
-sleep 2
-xdotool key F11
+#xdotool key Right
+#sleep 1
+#xdotool key KP_Enter
+#sleep 1
+#xdotool key F11
 EOF
 
 # Confirm script creation
