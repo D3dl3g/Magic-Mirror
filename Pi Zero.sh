@@ -4,38 +4,38 @@
 set -e
 
 # Prompt the user for customization
-echo "==== Kiosk Setup Script ===="
-read -p "Enter the Kiosk URL (default: http://<MM_SERVER_IP>): " KIOSK_URL
+echo -e "\033[0;32m==== Kiosk Setup Script ====\033[0m"
+read -p "\033[0;32mEnter the Kiosk URL (default: http://<MM_SERVER_IP>): \033[0m" KIOSK_URL
 KIOSK_URL=${KIOSK_URL:-http://<MM_SERVER_IP>}
 
-read -p "Enter the screen resolution (default: 1920x1080): " SCREEN_RESOLUTION
+read -p "\033[0;32mEnter the screen resolution (default: 1920x1080): \033[0m" SCREEN_RESOLUTION
 SCREEN_RESOLUTION=${SCREEN_RESOLUTION:-1920x1080}
 
 # Update and upgrade system
-echo "\n[1/5] Updating and upgrading system packages..."
-sudo apt update | pv -lep -s 100 > /dev/null
-sudo apt upgrade -y | pv -lep -s 100 > /dev/null
+echo -e "\033[0;33mUpdating and upgrading system packages...\033[0m"
+sudo apt update
+sudo apt upgrade -y
 
 # Disable and remove swap to save resources
-echo "\n[2/5] Disabling and removing swap..."
+echo -e "\033[0;33mDisabling and removing swap...\033[0m"
 sudo service dphys-swapfile stop
-echo "Stopped dphys-swapfile service."
+echo -e "\033[0;32mStopped dphys-swapfile service.\033[0m"
 sudo systemctl disable dphys-swapfile
-echo "Disabled dphys-swapfile service."
+echo -e "\033[0;32mDisabled dphys-swapfile service.\033[0m"
 sudo apt-get purge -y dphys-swapfile
-echo "Removed dphys-swapfile package."
+echo -e "\033[0;32mRemoved dphys-swapfile package.\033[0m"
 
 # Install required packages
-echo "\n[3/5] Installing required packages..."
+echo -e "\033[0;33mInstalling required packages...\033[0m"
 sudo apt install --no-install-recommends -y \
     xserver-xorg \
     xinit \
     x11-xserver-utils \
     chromium-browser \
-    matchbox-window-manager | pv -lep -s 100 > /dev/null
+    matchbox-window-manager
 
 # Create the kiosk script
-echo "\n[4/5] Creating kiosk script..."
+echo -e "\033[0;33mCreating kiosk script...\033[0m"
 cat <<EOL > ~/kiosk
 #!/bin/sh
 xset -dpms     # disable DPMS (Energy Star) features
@@ -46,18 +46,19 @@ chromium-browser --display=:0 --kiosk --incognito --window-position=0,0 $KIOSK_U
 EOL
 chmod +x ~/kiosk
 
-echo "Kiosk script created at ~/kiosk."
+echo -e "\033[0;32mKiosk script created at ~/kiosk.\033[0m"
 
 # Add kiosk script to .bashrc for auto-start
-echo "\n[5/5] Configuring auto-start..."
+echo -e "\033[0;33mConfiguring auto-start...\033[0m"
 if ! grep -q "xinit /home/pi/kiosk" ~/.bashrc; then
   echo "xinit /home/pi/kiosk -- vt\$(fgconsole)" >> ~/.bashrc
-  echo "Added kiosk script to .bashrc for auto-start."\else
-  echo "Kiosk script already configured in .bashrc."
+  echo -e "\033[0;32mAdded kiosk script to .bashrc for auto-start.\033[0m"
+else
+  echo -e "\033[0;32mKiosk script already configured in .bashrc.\033[0m"
 fi
 
 # Configure X11 for the desired screen resolution
-echo "Configuring X11 for screen resolution $SCREEN_RESOLUTION..."
+echo -e "\033[0;33mConfiguring X11 for screen resolution $SCREEN_RESOLUTION...\033[0m"
 sudo bash -c 'cat <<EOL > /etc/X11/xorg.conf
 Section "Screen"
     Identifier "Screen 0"
@@ -67,10 +68,23 @@ Section "Screen"
     EndSubSection
 EndSection
 EOL'
-echo "X11 configuration updated."
+echo -e "\033[0;32mX11 configuration updated.\033[0m"
 
 # Inform the user
-echo "\n==== Setup Complete ===="
-echo "Reboot the system to apply changes."
+echo -e "\033[0;32m==== Setup Complete ====\033[0m"
+echo -e "\033[0;32mReboot the system to apply changes.\033[0m"
 echo "You entered Kiosk URL: $KIOSK_URL"
 echo "You entered Screen Resolution: $SCREEN_RESOLUTION"
+
+echo -e "\n\n\033[1;32mSetup complete. Reboot your system to apply the changes.\033[0m"
+
+# Countdown timer with Ctrl+C cancellation
+echo -e "\033[0;33mThe system will reboot in 10 seconds. Press Ctrl+C to cancel.\033[0m"
+for i in {10..1}; do
+    printf "\rRebooting in %d seconds... " "$i"
+    sleep 1
+done
+
+# Reboot if the countdown is not interrupted
+echo -e "\n\033[0;32mRebooting now...\033[0m"
+sudo reboot
