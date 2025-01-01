@@ -3,13 +3,6 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-# Comment out the following block to allow SSH execution
-# Check if the script is running on a physical console
-#if [[ "$(tty)" != "/dev/tty"* ]]; then
-#    echo "This script must be run from a physical console (not over SSH)."
-#    exit 1
-#fi
-
 # Prompt the user for customization
 echo "==== Kiosk Setup Script ===="
 read -p "Enter the Kiosk URL (default: http://<MM_SERVER_IP>): " KIOSK_URL
