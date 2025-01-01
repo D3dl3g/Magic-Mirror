@@ -5,10 +5,10 @@ set -e
 
 # Prompt the user for customization
 echo -e "\033[0;32m==== Kiosk Setup Script ====\033[0m"
-read -p "\033[0;32mEnter the Kiosk URL (default: http://<MM_SERVER_IP>): \033[0m" KIOSK_URL
+read -p "Enter the Kiosk URL (default: http://<MM_SERVER_IP>): " KIOSK_URL
 KIOSK_URL=${KIOSK_URL:-http://<MM_SERVER_IP>}
 
-read -p "\033[0;32mEnter the screen resolution (default: 1920x1080): \033[0m" SCREEN_RESOLUTION
+read -p "Enter the screen resolution (default: 1920x1080): " SCREEN_RESOLUTION
 SCREEN_RESOLUTION=${SCREEN_RESOLUTION:-1920x1080}
 
 # Update and upgrade system
