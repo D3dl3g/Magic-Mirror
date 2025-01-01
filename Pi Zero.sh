@@ -3,12 +3,18 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Check if the script is running on a physical console
+if [[ "$(tty)" != "/dev/tty"* ]]; then
+    echo -e "\033[0;31mThis script must be run from a physical console (not over SSH).\033[0m"
+    exit 1
+fi
+
 # Prompt the user for customization
 echo -e "\033[0;32m==== Kiosk Setup Script ====\033[0m"
-read -p "Enter the Kiosk URL (default: http://<MM_SERVER_IP>): " KIOSK_URL
+read -p "\033[0;32mEnter the Kiosk URL (default: http://<MM_SERVER_IP>): \033[0m" KIOSK_URL
 KIOSK_URL=${KIOSK_URL:-http://<MM_SERVER_IP>}
 
-read -p "Enter the screen resolution (default: 1920x1080): " SCREEN_RESOLUTION
+read -p "\033[0;32mEnter the screen resolution (default: 1920x1080): \033[0m" SCREEN_RESOLUTION
 SCREEN_RESOLUTION=${SCREEN_RESOLUTION:-1920x1080}
 
 # Update and upgrade system
