@@ -19,6 +19,19 @@ function ctrl_c() {
     exit 0
 }
 
+# Auto-detect architecture and set arm_64bit=1 if applicable
+ARCHITECTURE=$(uname -m)
+
+# Initialize the variable
+ARM_64BIT=""
+
+if [[ "$ARCHITECTURE" == "aarch64" || "$ARCHITECTURE" == "arm64" ]]; then
+    ARM_64BIT="arm_64bit=1"
+    echo -e "\033[0;32m***Detected 64-bit ARM architecture ($ARCHITECTURE).***\033[0m"
+else
+    echo -e "\033[0;32m***Detected 32-bit ARM architecture ($ARCHITECTURE).***\033[0m"
+fi
+
 # Define the correct config.txt path
 CONFIG_PATH="/boot/config.txt"
 
@@ -33,19 +46,6 @@ fi
 if [ -f "$CONFIG_PATH" ]; then
   echo -e "\033[0;31mBacking up the existing config.txt to config.bk...\033[0m"
   sudo mv "$CONFIG_PATH" /boot/config.bk
-fi
-
-# Auto-detect architecture and set arm_64bit=1 if applicable
-ARCHITECTURE=$(uname -m)
-
-# Initialize the variable
-ARM_64BIT=""
-
-if [[ "$ARCHITECTURE" == "aarch64" || "$ARCHITECTURE" == "arm64" ]]; then
-    ARM_64BIT="arm_64bit=1"
-    echo -e "\033[0;32m***Detected 64-bit ARM architecture ($ARCHITECTURE).***\033[0m"
-else
-    echo -e "\033[0;32m***Detected 32-bit ARM architecture ($ARCHITECTURE).***\033[0m"
 fi
 
 # Create a new config.txt with the desired content
