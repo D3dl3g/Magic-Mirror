@@ -19,6 +19,10 @@ function ctrl_c() {
     exit 0
 }
 
+# Ask the user for the MagicMirror server URL in blue
+echo -e "\n${unbold_blue}Please enter the full URL of your MagicMirror Server (e.g., http://192.168.1.100:8080 or http://mm-server:8081):${unbold}"
+read MM_URL
+
 # Auto-detect architecture and set arm_64bit=1 if applicable
 ARCHITECTURE=$(uname -m)
 
@@ -45,14 +49,14 @@ fi
 # Backup the existing config.txt if it exists
 if [ -f "$CONFIG_PATH" ]; then
   echo -e "\033[0;31mBacking up the existing config.txt to config.bk...\033[0m"
-  sudo mv "$CONFIG_PATH" /boot/config.bk
+  mv "$CONFIG_PATH" /boot/config.bk
 fi
 
 # Create a new config.txt with the desired content
 echo -e "\033[0;33mCreating the new config.txt...\033[0m"
 
-# Use sudo tee to write the new config.txt
-sudo tee /boot/config.txt > /dev/null <<EOF
+# Use tee to write the new config.txt
+tee /boot/config.txt > /dev/null <<EOF
 # For more options and information see
 # http://rpf.io/configtxt
 # Some settings may impact device functionality. See link above for details
@@ -138,10 +142,8 @@ EOF
 
 echo -e "\033[0;32mconfig.txt has been created and updated successfully!\033[0m"
 
-# Prompt the user for the username to enable autologin for
-echo -e "\033[0;34mPlease enter the username for autologin (default: pi):\033[0m"
-read -r username
-username=${username:-pi}  # Default to 'pi' if no input is provided
+# User is always 'pi'
+username="pi"
 
 echo -e "\033[0;32mAutologin will be configured for user: $username\033[0m"
 
@@ -149,25 +151,8 @@ echo -e "\033[0;32mAutologin will be configured for user: $username\033[0m"
 if id "$username" &>/dev/null; then
     echo -e "\033[0;32mUser '$username' exists.\033[0m"
 else
-    # User does not exist, create the user
-    echo -e "\033[0;31mUser '$username' does not exist. Creating the user...\033[0m"
-    sudo adduser --gecos "" --disabled-password "$username"
-    echo -e "\033[0;32mUser '$username' has been created.\033[0m"
-
-    # Prompt for password if the user wants to set one
-    echo -e "\033[0;34mDo you want to set a password for user '$username'? (y/n):\033[0m"
-    read -r set_password
-    if [[ "$set_password" == "y" || "$set_password" == "Y" ]]; then
-        echo -e "\033[0;34mPlease enter the password for user '$username':\033[0m"
-        sudo passwd "$username"
-        echo -e "\033[0;32mPassword for user '$username' has been set.\033[0m"
-    else
-        echo -e "\033[0;32mNo password set for user '$username'.\033[0m"
-    fi
-
-    # Add user to the sudo group
-    sudo usermod -aG sudo "$username"
-    echo -e "\033[0;32mUser '$username' has been added to the sudo group.\033[0m"
+    echo -e "\033[0;31mUser '$username' does not exist. Please create the user before running this script.\033[0m"
+    exit 1
 fi
 
 # Check if the override.conf file exists for auto-login
@@ -178,73 +163,67 @@ if [ -f "$AUTOLOGIN_FILE" ]; then
 else
     echo -e "${unbold_orange}Enabling console auto-login for user '$username'...${unbold}"
 
-# Setting up autologin for tty1 with the selected or newly created user
-echo -e "\033[0;33mSetting up autologin for tty1...\033[0m"
-sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
-cat <<EOF | sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf > /dev/null
+    # Setting up autologin for tty1 with the selected user
+    echo -e "\033[0;33mSetting up autologin for tty1...\033[0m"
+    mkdir -p /etc/systemd/system/getty@tty1.service.d/
+    cat <<EOF > /etc/systemd/system/getty@tty1.service.d/autologin.conf
 [Service]
 ExecStart=
 ExecStart=-/sbin/agetty --autologin $username --noclear %I \$TERM
 EOF
-echo -e "\033[0;32mAutologin for tty1 configured for user: $username.\033[0m"
+    echo -e "\033[0;32mAutologin for tty1 configured for user: $username.\033[0m"
 fi
 
 # Check if swap is enabled
 if [ $(free | grep Swap | awk '{print $2}') -gt 0 ]; then
     echo -e "${unbold_orange}Swap is enabled.${unbold}"
     echo -e "${unbold_yellow}Stopping swap service${unbold} and ${unbold_red}disabling swap...${unbold}"
+    
     # Stop the dphys-swapfile service
-    sudo service dphys-swapfile stop
+    service dphys-swapfile stop
+    
     # Recheck swap status
     if [ $(free | grep Swap | awk '{print $2}') -eq 0 ]; then
         echo -e "${unbold_green}Swap Disabled.${unbold}"
     fi
+
     # Label for removing the service
-echo -e "${unbold_orange}Removing \"dphys-swapfile\"...${unbold}"
+    echo -e "${unbold_orange}Removing \"dphys-swapfile\"...${unbold}"
 
-# Remove the dphys-swapfile service
-sudo -u $username sudo apt-get purge -y -qq dphys-swapfile > /dev/null 2>&1
+    # Remove the dphys-swapfile service
+    apt-get purge -y -qq dphys-swapfile > /dev/null 2>&1
 
-# Confirm successful removal
-echo -e "${unbold_green}\"dphys-swapfile\" Successfully Removed.${unbold}"
+    # Confirm successful removal
+    echo -e "${unbold_green}\"dphys-swapfile\" Successfully Removed.${unbold}"
 else
     echo -e "${unbold_green}Swap is already disabled.${unbold}"
 fi
 
 # Update system packages (minimized output)
 echo -e "${unbold_orange}Updating packages...${unbold}"
-sudo -u $username sudo apt-get update -qq && sudo apt-get upgrade -y -qq > /dev/null 2>&1 && echo -e "${unbold_green}System updated.${unbold}"
+apt-get update -qq && apt-get upgrade -y -qq > /dev/null 2>&1 && echo -e "${unbold_green}System updated.${unbold}"
 
 # Install required packages (minimized output)
 echo -e "${unbold_orange}Installing necessary packages...${unbold}"
-sudo -u $username sudo apt-get install --no-install-recommends -y -qq xserver-xorg xinit x11-xserver-utils openbox midori unclutter lm-sensors > /dev/null 2>&1 && echo -e "${unbold_green}Packages installed.${unbold}"
-
-# Add one blank lines
-#echo -e "\n"
+apt-get install --no-install-recommends -y -qq xserver-xorg xinit x11-xserver-utils openbox midori unclutter lm-sensors > /dev/null 2>&1 && echo -e "${unbold_green}Packages installed.${unbold}"
 
 # Define the lines to add
 line="######## <GITHUB LINK> LINE ADDED FOR KIOSK MODE ########"
 bashrc_line="xinit /home/$username/kiosk -- vt\$(fgconsole)"
 
-# Run the block as $username
-sudo su - "$username" -c "
-if ! grep -Fxq \"$bashrc_line\" /home/$username/.bashrc; then
-    echo -e '\033[0;32mAdding kiosk mode startup line to .bashrc...\033[0m'
-    echo -e '\n$line' >> /home/$username/.bashrc
-    echo -e \"$bashrc_line\" >> /home/$username/.bashrc
+# Add kiosk mode startup line to .bashrc
+if ! grep -Fxq "$bashrc_line" /home/$username/.bashrc; then
+    echo -e "\033[0;32mAdding kiosk mode startup line to .bashrc...\033[0m"
+    echo -e "\n$line" >> /home/$username/.bashrc
+    echo -e "$bashrc_line" >> /home/$username/.bashrc
 else
-    echo -e '\033[0;32mKiosk mode line already exists in .bashrc.\033[0m'
+    echo -e "\033[0;32mKiosk mode line already exists in .bashrc.\033[0m"
 fi
-"
-
-# Ask the user for the MagicMirror server URL in blue
-echo -e "\n${unbold_blue}Please enter the full URL of your MagicMirror Server (e.g., http://192.168.1.100:8080 or http://mm-server:8081):${unbold}"
-read MM_URL
 
 # Create the ~/kiosk file and add the script contents
 echo -e "\n${unbold_orange}Creating Kiosk Script...${unbold}"
 
-sudo -u $username cat << EOF > /home/$username/kiosk
+cat << EOF > /home/$username/kiosk
 #!/bin/sh
 xset -dpms     # disable DPMS (Energy Star) features.
 xset s off     # disable screen saver
@@ -262,17 +241,16 @@ else
 fi
 
 # Make the script executable
-sudo -u $username chmod +x /home/$username/kiosk
+chmod +x /home/$username/kiosk
 
 # Confirm script is executable
-echo -e "${unbold_green}Kiosk Script is now "Executable".${unbold}"
-
+echo -e "${unbold_green}Kiosk Script is now \"Executable\".${unbold}"
 
 # Create the /etc/X11/xorg.conf file with the necessary configuration
 echo -e "\n${unbold_orange}Creating /etc/X11/xorg.conf file...${unbold}"
 
 # Create the xorg.conf file
-sudo -u $username sudo bash -c 'cat << EOF > /etc/X11/xorg.conf
+sudo bash -c 'cat << EOF > /etc/X11/xorg.conf
 Section "Screen"
     Identifier "Screen 0"
     Device "HDMI-1"
@@ -292,10 +270,10 @@ sudo apt-get autoremove -y -qq > /dev/null 2>&1 && echo -e "${unbold_green}Non-r
 # Final message (bold green)
 echo -e "\n${bold_green}Setup complete.${unbold}"
 
-# Countdown before reboot (10 seconds)
-echo -e "\n ${unbold_orange}Rebooting in 10 seconds... Press Ctrl+C to cancel.${unbold}"
+# Countdown before reboot (60 seconds)
+echo -e "\n ${unbold_orange}Rebooting in 60 seconds... Press Ctrl+C to cancel.${unbold}"
 
-for i in {10..1}; do
+for i in {60..1}; do
     echo -ne "$i seconds remaining...\r"
     sleep 1
 done
