@@ -203,7 +203,7 @@ if [ $(free | grep Swap | awk '{print $2}') -gt 0 ]; then
 echo -e "${unbold_orange}Removing \"dphys-swapfile\"...${unbold}"
 
 # Remove the dphys-swapfile service
-sudo apt-get purge -y -qq dphys-swapfile > /dev/null 2>&1
+sudo -u $username sudo apt-get purge -y -qq dphys-swapfile > /dev/null 2>&1
 
 # Confirm successful removal
 echo -e "${unbold_green}\"dphys-swapfile\" Successfully Removed.${unbold}"
@@ -213,11 +213,11 @@ fi
 
 # Update system packages (minimized output)
 echo -e "${unbold_orange}Updating packages...${unbold}"
-sudo apt-get update -qq && sudo apt-get upgrade -y -qq > /dev/null 2>&1 && echo -e "${unbold_green}System updated.${unbold}"
+sudo -u $username sudo apt-get update -qq && sudo apt-get upgrade -y -qq > /dev/null 2>&1 && echo -e "${unbold_green}System updated.${unbold}"
 
 # Install required packages (minimized output)
 echo -e "${unbold_orange}Installing necessary packages...${unbold}"
-sudo apt-get install --no-install-recommends -y -qq xserver-xorg xinit x11-xserver-utils openbox midori unclutter lm-sensors > /dev/null 2>&1 && echo -e "${unbold_green}Packages installed.${unbold}"
+sudo -u $username sudo apt-get install --no-install-recommends -y -qq xserver-xorg xinit x11-xserver-utils openbox midori unclutter lm-sensors > /dev/null 2>&1 && echo -e "${unbold_green}Packages installed.${unbold}"
 
 # Add one blank lines
 #echo -e "\n"
@@ -252,8 +252,12 @@ unclutter &    # hide X mouse cursor unless mouse activated
 midori -e Fullscreen $MM_URL
 EOF
 
-# Confirm script creation
-echo -e "${unbold_green}Kiosk Script Successfully Created.${unbold}"
+if [ -f /home/$username/kiosk ]; then
+    echo -e "${unbold_green}Kiosk script created successfully.${unbold}"
+else
+    echo -e "${unbold_red}Failed to create kiosk script.${unbold}"
+    exit 1
+fi
 
 # Make the script executable
 chmod +x /home/$username/kiosk
