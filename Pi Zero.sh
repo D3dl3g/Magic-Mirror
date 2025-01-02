@@ -51,6 +51,8 @@ fi
 # Create a new config.txt with the desired content
 echo -e "\033[0;33mCreating the new config.txt...\033[0m"
 
+# Use sudo tee to write the new config.txt
+sudo tee /boot/firmware/config.txt > /dev/null <<EOF
 # For more options and information see
 # http://rpf.io/configtxt
 # Some settings may impact device functionality. See link above for details
