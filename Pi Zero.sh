@@ -154,25 +154,37 @@ else
     echo -e "\033[0;31mUser '$username' does not exist. Please create the user before running this script, don't forget to set sudoers file for created user\033[0m"
     exit 1
 fi
-
 # Check if the override.conf file exists for auto-login
-AUTOLOGIN_FILE="/etc/systemd/system/getty@tty1.service.d/override.conf"
+AUTOLOGIN_FILE="/etc/systemd/system/getty@tty1.service.d/autologin.conf"
 
 if [ -f "$AUTOLOGIN_FILE" ]; then
-    echo -e "${unbold_green}Auto-login configuration already exists.${unbold}"
+    if grep -q "ExecStart=-/sbin/agetty --autologin $username --noclear %I \$TERM" "$AUTOLOGIN_FILE"; then
+        echo -e "${unbold_green}Auto-login configuration already exists and is correctly set.${unbold}"
+    else
+        echo -e "${unbold_orange}Auto-login configuration exists but needs updating.${unbold}"
+        sudo tee "$AUTOLOGIN_FILE" > /dev/null <<EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin $username --noclear %I \$TERM
+EOF
+        echo -e "\033[0;32mAutologin for tty1 updated for user: $username.\033[0m"
+    fi
 else
     echo -e "${unbold_orange}Enabling console auto-login for user '$username'...${unbold}"
 
     # Setting up autologin for tty1 with the selected user
     echo -e "\033[0;33mSetting up autologin for tty1...\033[0m"
     sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
-    sudo cat <<EOF > /etc/systemd/system/getty@tty1.service.d/autologin.conf
+
+    # Write the autologin configuration using tee
+    sudo tee "$AUTOLOGIN_FILE" > /dev/null <<EOF
 [Service]
 ExecStart=
 ExecStart=-/sbin/agetty --autologin $username --noclear %I \$TERM
 EOF
     echo -e "\033[0;32mAutologin for tty1 configured for user: $username.\033[0m"
 fi
+
 
 # Check if swap is enabled
 if [ $(free | grep Swap | awk '{print $2}') -gt 0 ]; then
