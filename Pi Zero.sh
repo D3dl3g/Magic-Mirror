@@ -49,14 +49,14 @@ fi
 # Backup the existing config.txt if it exists
 if [ -f "$CONFIG_PATH" ]; then
   echo -e "\033[0;31mBacking up the existing config.txt to config.bk...\033[0m"
-  mv "$CONFIG_PATH" /boot/config.bk
+  sudo mv "$CONFIG_PATH" /boot/config.bk
 fi
 
 # Create a new config.txt with the desired content
 echo -e "\033[0;33mCreating the new config.txt...\033[0m"
 
 # Use tee to write the new config.txt
-tee /boot/config.txt > /dev/null <<EOF
+sudo tee /boot/config.txt > /dev/null <<EOF
 # For more options and information see
 # http://rpf.io/configtxt
 # Some settings may impact device functionality. See link above for details
@@ -151,7 +151,7 @@ echo -e "\033[0;32mAutologin will be configured for user: $username\033[0m"
 if id "$username" &>/dev/null; then
     echo -e "\033[0;32mUser '$username' exists.\033[0m"
 else
-    echo -e "\033[0;31mUser '$username' does not exist. Please create the user before running this script.\033[0m"
+    echo -e "\033[0;31mUser '$username' does not exist. Please create the user before running this script, don't forget to set sudoers file for created user\033[0m"
     exit 1
 fi
 
@@ -165,8 +165,8 @@ else
 
     # Setting up autologin for tty1 with the selected user
     echo -e "\033[0;33mSetting up autologin for tty1...\033[0m"
-    mkdir -p /etc/systemd/system/getty@tty1.service.d/
-    cat <<EOF > /etc/systemd/system/getty@tty1.service.d/autologin.conf
+    sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
+    sudo cat <<EOF > /etc/systemd/system/getty@tty1.service.d/autologin.conf
 [Service]
 ExecStart=
 ExecStart=-/sbin/agetty --autologin $username --noclear %I \$TERM
@@ -180,7 +180,7 @@ if [ $(free | grep Swap | awk '{print $2}') -gt 0 ]; then
     echo -e "${unbold_yellow}Stopping swap service${unbold} and ${unbold_red}disabling swap...${unbold}"
     
     # Stop the dphys-swapfile service
-    service dphys-swapfile stop
+    sudo service dphys-swapfile stop
     
     # Recheck swap status
     if [ $(free | grep Swap | awk '{print $2}') -eq 0 ]; then
@@ -191,7 +191,7 @@ if [ $(free | grep Swap | awk '{print $2}') -gt 0 ]; then
     echo -e "${unbold_orange}Removing \"dphys-swapfile\"...${unbold}"
 
     # Remove the dphys-swapfile service
-    apt-get purge -y -qq dphys-swapfile > /dev/null 2>&1
+    sudo apt-get purge -y -qq dphys-swapfile > /dev/null 2>&1
 
     # Confirm successful removal
     echo -e "${unbold_green}\"dphys-swapfile\" Successfully Removed.${unbold}"
@@ -201,29 +201,29 @@ fi
 
 # Update system packages (minimized output)
 echo -e "${unbold_orange}Updating packages...${unbold}"
-apt-get update -qq && apt-get upgrade -y -qq > /dev/null 2>&1 && echo -e "${unbold_green}System updated.${unbold}"
+sudo apt-get update -qq && apt-get upgrade -y -qq > /dev/null 2>&1 && echo -e "${unbold_green}System updated.${unbold}"
 
 # Install required packages (minimized output)
 echo -e "${unbold_orange}Installing necessary packages...${unbold}"
-apt-get install --no-install-recommends -y -qq xserver-xorg xinit x11-xserver-utils openbox midori unclutter lm-sensors > /dev/null 2>&1 && echo -e "${unbold_green}Packages installed.${unbold}"
+sudo apt-get install --no-install-recommends -y -qq xserver-xorg xinit x11-xserver-utils openbox midori unclutter lm-sensors > /dev/null 2>&1 && echo -e "${unbold_green}Packages installed.${unbold}"
 
 # Define the lines to add
 line="######## <GITHUB LINK> LINE ADDED FOR KIOSK MODE ########"
-bashrc_line="xinit /home/$username/kiosk -- vt\$(fgconsole)"
+bashrc_line="xinit /home/pi/kiosk -- vt\$(fgconsole)"
 
 # Add kiosk mode startup line to .bashrc
-if ! grep -Fxq "$bashrc_line" /home/$username/.bashrc; then
+if ! grep -Fxq "$bashrc_line" /home/pi/.bashrc; then
     echo -e "\033[0;32mAdding kiosk mode startup line to .bashrc...\033[0m"
-    echo -e "\n$line" >> /home/$username/.bashrc
-    echo -e "$bashrc_line" >> /home/$username/.bashrc
+    echo -e "\n$line" >> /home/pi/.bashrc
+    echo -e "$bashrc_line" >> /home/pi/.bashrc
 else
     echo -e "\033[0;32mKiosk mode line already exists in .bashrc.\033[0m"
 fi
 
-# Create the ~/kiosk file and add the script contents
+# Create the Kiosk file and add the script contents
 echo -e "\n${unbold_orange}Creating Kiosk Script...${unbold}"
 
-cat << EOF > /home/$username/kiosk
+cat << EOF > /home/pi/kiosk
 #!/bin/sh
 xset -dpms     # disable DPMS (Energy Star) features.
 xset s off     # disable screen saver
@@ -241,7 +241,7 @@ else
 fi
 
 # Make the script executable
-chmod +x /home/$username/kiosk
+chmod +x /home/pi/kiosk
 
 # Confirm script is executable
 echo -e "${unbold_green}Kiosk Script is now \"Executable\".${unbold}"
