@@ -284,10 +284,10 @@ sudo apt-get autoremove -y -qq > /dev/null 2>&1 && echo -e "${unbold_green}Non-r
 # Final message (bold green)
 echo -e "\n${bold_green}Setup complete.${unbold}"
 
-# Countdown before reboot (60 seconds)
-echo -e "\n ${unbold_orange}Rebooting in 60 seconds... Press Ctrl+C to cancel.${unbold}"
+# Countdown before reboot (10 seconds)
+echo -e "\n ${unbold_orange}Rebooting in 10 seconds... Press Ctrl+C to cancel.${unbold}"
 
-for i in {60..1}; do
+for i in {10..1}; do
     echo -ne "$i seconds remaining...\r"
     sleep 1
 done
