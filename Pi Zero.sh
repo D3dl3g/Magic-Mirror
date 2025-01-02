@@ -139,7 +139,7 @@ EOF
 echo -e "\033[0;32mconfig.txt has been created and updated successfully!\033[0m"
 
 # Prompt the user for the username to enable autologin for
-echo -e "\033[0;33mPlease enter the username for autologin (default: pi):\033[0m"
+echo -e "\033[0;34mPlease enter the username for autologin (default: pi):\033[0m"
 read -r username
 username=${username:-pi}  # Default to 'pi' if no input is provided
 
@@ -155,10 +155,10 @@ else
     echo -e "\033[0;32mUser '$username' has been created.\033[0m"
 
     # Prompt for password if the user wants to set one
-    echo -e "\033[0;33mDo you want to set a password for user '$username'? (y/n):\033[0m"
+    echo -e "\033[0;34mDo you want to set a password for user '$username'? (y/n):\033[0m"
     read -r set_password
     if [[ "$set_password" == "y" || "$set_password" == "Y" ]]; then
-        echo -e "\033[0;33mPlease enter the password for user '$username':\033[0m"
+        echo -e "\033[0;34mPlease enter the password for user '$username':\033[0m"
         sudo passwd "$username"
         echo -e "\033[0;32mPassword for user '$username' has been set.\033[0m"
     else
