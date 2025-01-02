@@ -222,18 +222,20 @@ sudo -u $username sudo apt-get install --no-install-recommends -y -qq xserver-xo
 # Add one blank lines
 #echo -e "\n"
 
-# Check if the line exists in .bashrc and add it if necessary
+# Define the lines to add
 line="######## <GITHUB LINK> LINE ADDED FOR KIOSK MODE ########"
 bashrc_line="xinit /home/$username/kiosk -- vt\$(fgconsole)"
 
-# Check if the line already exists in .bashrc
-if ! grep -Fxq "$bashrc_line" /home/$username/.bashrc; then
-    echo -e "${unbold_green}Adding kiosk mode startup line to .bashrc...${unbold}"
-    echo -e "\n$line" >> /home/$username/.bashrc
-    echo -e "$bashrc_line" >> /home/$username/.bashrc
+# Run the block as $username
+sudo su - "$username" -c "
+if ! grep -Fxq \"$bashrc_line\" /home/$username/.bashrc; then
+    echo -e '\033[0;32mAdding kiosk mode startup line to .bashrc...\033[0m'
+    echo -e '\n$line' >> /home/$username/.bashrc
+    echo -e \"$bashrc_line\" >> /home/$username/.bashrc
 else
-    echo -e "${unbold_green}Kiosk mode line already exists in .bashrc.${unbold}"
+    echo -e '\033[0;32mKiosk mode line already exists in .bashrc.\033[0m'
 fi
+"
 
 # Ask the user for the MagicMirror server URL in blue
 echo -e "\n${unbold_blue}Please enter the full URL of your MagicMirror Server (e.g., http://192.168.1.100:8080 or http://mm-server:8081):${unbold}"
@@ -242,7 +244,7 @@ read MM_URL
 # Create the ~/kiosk file and add the script contents
 echo -e "\n${unbold_orange}Creating Kiosk Script...${unbold}"
 
-cat << EOF > /home/$username/kiosk
+sudo -u $username cat << EOF > /home/$username/kiosk
 #!/bin/sh
 xset -dpms     # disable DPMS (Energy Star) features.
 xset s off     # disable screen saver
@@ -260,7 +262,7 @@ else
 fi
 
 # Make the script executable
-chmod +x /home/$username/kiosk
+sudo -u $username chmod +x /home/$username/kiosk
 
 # Confirm script is executable
 echo -e "${unbold_green}Kiosk Script is now "Executable".${unbold}"
@@ -270,7 +272,7 @@ echo -e "${unbold_green}Kiosk Script is now "Executable".${unbold}"
 echo -e "\n${unbold_orange}Creating /etc/X11/xorg.conf file...${unbold}"
 
 # Create the xorg.conf file
-sudo bash -c 'cat << EOF > /etc/X11/xorg.conf
+sudo -u $username sudo bash -c 'cat << EOF > /etc/X11/xorg.conf
 Section "Screen"
     Identifier "Screen 0"
     Device "HDMI-1"
