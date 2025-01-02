@@ -176,7 +176,7 @@ AUTOLOGIN_FILE="/etc/systemd/system/getty@tty1.service.d/override.conf"
 if [ -f "$AUTOLOGIN_FILE" ]; then
     echo -e "${unbold_green}Auto-login configuration already exists.${unbold}"
 else
-    echo -e "${unbold_orange}Enabling console auto-login for user 'pi'...${unbold}"
+    echo -e "${unbold_orange}Enabling console auto-login for user '$username'...${unbold}"
 
 # Setting up autologin for tty1 with the selected or newly created user
 echo -e "\033[0;33mSetting up autologin for tty1...\033[0m"
@@ -224,13 +224,13 @@ sudo apt-get install --no-install-recommends -y -qq xserver-xorg xinit x11-xserv
 
 # Check if the line exists in .bashrc and add it if necessary
 line="######## <GITHUB LINK> LINE ADDED FOR KIOSK MODE ########"
-bashrc_line="xinit /home/pi/kiosk -- vt\$(fgconsole)"
+bashrc_line="xinit /home/$username/kiosk -- vt\$(fgconsole)"
 
 # Check if the line already exists in .bashrc
-if ! grep -Fxq "$bashrc_line" ~/.bashrc; then
+if ! grep -Fxq "$bashrc_line" /home/$username/.bashrc; then
     echo -e "${unbold_green}Adding kiosk mode startup line to .bashrc...${unbold}"
-    echo -e "\n$line" >> ~/.bashrc
-    echo -e "$bashrc_line" >> ~/.bashrc
+    echo -e "\n$line" >> /home/$username/.bashrc
+    echo -e "$bashrc_line" >> /home/$username/.bashrc
 else
     echo -e "${unbold_green}Kiosk mode line already exists in .bashrc.${unbold}"
 fi
@@ -240,9 +240,9 @@ echo -e "\n${unbold_blue}Please enter the full URL of your MagicMirror Server (e
 read MM_URL
 
 # Create the ~/kiosk file and add the script contents
-echo -e "\n${unbold_orange}Creating ~/kiosk script...${unbold}"
+echo -e "\n${unbold_orange}Creating Kiosk Script...${unbold}"
 
-cat << EOF > ~/kiosk
+cat << EOF > /home/$username/kiosk
 #!/bin/sh
 xset -dpms     # disable DPMS (Energy Star) features.
 xset s off     # disable screen saver
@@ -253,13 +253,13 @@ midori -e Fullscreen $MM_URL
 EOF
 
 # Confirm script creation
-echo -e "${unbold_green}~/kiosk Script Successfully Created.${unbold}"
+echo -e "${unbold_green}Kiosk Script Successfully Created.${unbold}"
 
 # Make the script executable
-chmod +x ~/kiosk
+chmod +x /home/$username/kiosk
 
 # Confirm script is executable
-echo -e "${unbold_green}~/kiosk Script is Now Executable.${unbold}"
+echo -e "${unbold_green}Kiosk Script is now "Executable".${unbold}"
 
 
 # Create the /etc/X11/xorg.conf file with the necessary configuration
