@@ -212,7 +212,7 @@ Now we setup the Kiosk display most of this is pretty uniform accross kiosk buil
 ```
 nano ~/kiosk
 ```
-and insert
+and insert (dont forget to modify **MM SERVER IP** on the last line, you can use DNS Name or IP for your instance, for example http://MMServer.home:8080 or http://192.168.0.20:8080)
 ```
 #!/bin/sh
 xset -dpms     # disable DPMS (Energy Star) features.
