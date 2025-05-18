@@ -36,7 +36,7 @@ To allow your CT to actually be a server for your MagicMirror. We need to instal
   
 We will need to pull the latest copy of Node.js, for install, from NodeSource. (v18.x at the time of writing this), update the repos and install.
   
-Next, we'll need NPM (NPM Installed with nodejs, hence no 'individual' install line) and Yarn (which is the bit that lets NPM and JS stuff play nicely together)
+Next, we'll need NPM (NPM Installed with nodejs, hence no 'individual' install line) and Yarn (which is the bit that lets NPM and JS stuff play nicely together) Check https://deb.nodesource.com/ for latest nodejs, modify the 2nd line to suit.
 
 ```
 apt install sudo curl wget git build-essential unzip gcc g++ make
