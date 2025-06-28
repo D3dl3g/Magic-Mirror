@@ -49,6 +49,8 @@ curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && echo "
 
 ### Installing MagicMirror
 
+the below section i have stopped using as a source for install... i now use install scripts listed here https://github.com/sdetweil/MagicMirror_scripts
+
 Now thats all the underlying systems taken care off, its time to "git" MM.
 ```
 git clone https://github.com/MichMich/MagicMirror
@@ -152,9 +154,9 @@ Reboot to confirm server comes up with CT
 ------------
 
 # Raspberry Pi 0/1/2/3/4 Client Setup
-**Now to set up the Client for attchment to your screen in you MagicMirror.**
+**Now to set up the Client for attchment to your screen in you MagicMirror. Auto install Script is now available in my other Repo https://github.com/D3dl3g/MM-Client Script takes care of all of the install, you only need to give it a clean build of PiOS Lite Bullseye**
 
-Set yourself up with a Pi0/Pi0 W/Pi0 WH/Pi0 2 W/Pi/Pi2/Pi3/Pi4, running PiOS Lite (32-bit Legacy (armv7l), i have been unable to get this to work in 64-bit, or since the switch to Wayland as default for deb in 32 or 64), have a WiFi Dongle attached (if "non-W" varient), SSH Enabled, and your wpa-supplicant set. 
+Set yourself up with a Pi0/Pi0 W/Pi0 WH/Pi0 2 W/Pi/Pi2/Pi3/Pi4, running PiOS Lite Bullseye (Later OSes dont appear to work Bookworm has some funky issues with the way i have the script working. im yet to do more testing to confirm/deny), have a WiFi Dongle attached (if "non-W" varient), SSH Enabled, and your wpa-supplicant set. 
 SSH into it with user 'pi',
 ```
 sudo raspi-config
