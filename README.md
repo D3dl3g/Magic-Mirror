@@ -3,10 +3,10 @@
 
 I'm going to assume that IF youre setting MagicMirror up this way, then you're comfortable with creating a CT in Proxmox AND are able to SSH into a RPi after SDCard creation as well as assigning static IPs to your kit/CTs.
 
-Here is the process i used to create a containered MM Server and an MM Client utilising a Raspberry Pi0 (rev1.2). For the next couple of months i may add to this as i find more streamlined ways of doing things via suggestions/research but **please only consider this info accurate up to June 2022.** I'm a n00b and I'll for get this is here unless I get an email for something i did wrong, soo yeah bear that in mind ;)
+Here is the process i used to create a containered MM Server and an MM Client utilising a Raspberry Pi0 (rev1.2). **please only consider this info accurate up to Jan 2026.** I'm a n00b and I'll for get this is here unless I get an email for something i did wrong, soo yeah bear that in mind ;)
 
 
-Walkthroughs I am duplicating here, incase sources disappear, I take no credit for the creation/deletion of these.
+Walkthroughs I am duplicating here (abeit with updated packages), incase sources disappear, I take no credit for the creation/deletion of these.
 
 [Server (MM Forum)](https://forum.magicmirror.builders/topic/11003/getting-mm-running-on-debian-10-not-on-a-rpi "Server (MM Forum)")
 
@@ -18,9 +18,10 @@ Walkthroughs I am duplicating here, incase sources disappear, I take no credit f
 
 ## LXC / Proxmox CT Server Setup
 
-**Proxmox 7.2-4, Create CT, Debian 11.0-1 (LXC base Image available from Proxmox)... 4GiB disk, 256MiB Mem & Swap , 1CPU Core, Unprivilege = No, Nesting = 1 (after CT generation), Network = enabled, Static IP preferable** 
+**Proxmox 9.0.11, Create CT, Debian 13.1-2 (LXC base Image available from Proxmox)... 4GiB disk, 256MiB Mem & Swap , 1CPU Core, Unprivilege = Yes or No, Nesting = 1 (if "Unprivilege = no" after CT generation you will have to enable nesting), Network = enabled, Static IP preferable** 
 
-![prox](https://user-images.githubusercontent.com/48180011/176882105-dcf78824-14ce-49d2-b80b-733e473bf716.png)
+<img width="506" height="297" alt="image" src="https://github.com/user-attachments/assets/70911176-1f64-42ee-a736-fd4f91a6d243" />
+
 
 ------------
 
@@ -28,68 +29,89 @@ First we'll do an update of the container.
 ```
 apt update && apt upgrade -y
 ```
-
 ------------
 
-### Required Packages
-To allow your CT to actually be a server for your MagicMirror. We need to install a small handful of packages, as they dont come "pre-bundled" with your CT Image (a CT is stripped of the usual tools you will find in OS), so we'll need to install "Sudo", "Curl", "Wget" & "Git" "build-essential" "unzip" "gcc" "g++" "make"
-  
-We will need to pull the latest copy of Node.js, for install, from NodeSource. (v18.x at the time of writing this), update the repos and install.
-  
-Next, we'll need NPM (NPM Installed with nodejs, hence no 'individual' install line) and Yarn (which is the bit that lets NPM and JS stuff play nicely together) Check https://deb.nodesource.com/ for latest nodejs, modify the 2nd line to suit.
+### Creating a User
+
+If using linux for anything its pretty solid practice to install packages and things via a user rather than root, creation of a user should be done as root, as it allows for groups to be set, especially the "sudo" ability of the user. since its a fresh container, the only user currently is root, so that solves a problem. you can call your user anything, i am using the user `mm` for this guide
+```adduser mm```
+<img width="419" height="249" alt="image" src="https://github.com/user-attachments/assets/a9673e6a-c12c-4033-b787-4c67a67e5614" />
+
+After user creation, we add the `user` to the `sudo` group (which allows us to execute `sudo` commands when required) 
+`-a` (Append) Adds the user to the specified group without removing them from other groups, 
+`-G` (Group) Specifies the group to which the user should be added. In this case `sudo`.
 
 ```
-apt install sudo curl wget git build-essential unzip gcc g++ make
-curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-apt install nodejs
-curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list && apt update && apt install yarn
-```
-  
-------------
-
-### Installing MagicMirror
-
-the below section i have stopped using as a source for install... i now use install scripts listed here https://github.com/sdetweil/MagicMirror_scripts
-
-Now thats all the underlying systems taken care off, its time to "git" MM.
-```
-git clone https://github.com/MichMich/MagicMirror
-```
-Change working directory to...
-```
-cd MagicMirror/
+usermod -aG sudo mm
 ```
 
-...and do this usual step so we dont loose the default layout or break anything permenently.
+We can check the groups of the `user` by using the `groups` command
 ```
-cp config/config.js.sample config/config.js
-```
-Now we install the NPM goodies along with an audit fix, which seems to fix any warnings that crop up, then force the latest version (at time of writing 8.13.1)
-"--only=prod --omit=dev" args seem to be required as stated at MM install page.
-
-![npmold](https://user-images.githubusercontent.com/48180011/175962006-45a8ae9a-2ade-4301-9057-672047fed6a9.png)![npminstall](https://user-images.githubusercontent.com/48180011/175962021-760b9dbe-e695-4776-ad7c-0f4c26da7ff3.png)
-```
-npm install --only=prod --omit=dev
-npm audit fix
-npm install -g npm@8.13.1
-```
-Last little bit of housekeeping
-```
-apt update && apt upgrade -y && apt autoremove -y
+groups mm
 ```
 
+you can do this before and after `usermod` to confirm changes have stuck
+
+<img width="288" height="87" alt="image" src="https://github.com/user-attachments/assets/c0aafcdb-4e63-4edb-9fd4-0dd9ceea2f61" />
+
+
+Lastly we need to install the `sudo` & `curl` package as `root` to allow `sudo` & `curl` commands to be undertaken by the new user. 
+
+```
+apt install sudo curl
+```
+<img width="687" height="326" alt="image" src="https://github.com/user-attachments/assets/b5a96966-7a52-430d-938e-dac694d559d8" />
+
+
+all further install steps should be undertaken as this new user. we'll switch to user and change the working directory to `mm home`
+
+```
+su mm
+```
+```
+cd #
+```
+<img width="192" height="66" alt="image" src="https://github.com/user-attachments/assets/dd4386ea-ae6a-4cb9-9de0-9c2fef82bb29" />
+
+
+
+
+Since initial writing of this guide i have been made aware of a more streamlined way of installing and updating a MM Server instance.
+
+https://github.com/sdetweil/MagicMirror_scripts
+
+using this install script it doesnt really matter if you y/n the screensaver diasable promt as it will be a server
+I, personally, use PM2 for easier process interaction. completely your choice, i will cover the setup of PM2 further down
+
+<img width="1016" height="1121" alt="image" src="https://github.com/user-attachments/assets/557d6eee-32df-4332-8726-5ee4eb1d5e71" />
+
+
+
+ 
 ------------
 
 ### IP Settings
+
+To find out which IP your CT is on we need to ask it look for the IP tied to the interface you are using, in this example,`eth0@if5` so an IP of `192.168.0.227` at this point you can all so see its MAC address `bc:24:11:6d:ab:d4` copy and save these somewhere safe for later & we'll set up static IPs
+```
+ip -a
+```
+<img width="839" height="277" alt="image" src="https://github.com/user-attachments/assets/468e9e94-2ae8-4bb1-ae26-a7fdd4f92716" />
+
+
+
 To get the Server to be viewable from a Client or any web browser on your network are now going to tell the server which IP to attach itself to and which IPs are allowed to access the server.
 ```
-nano /root/MagicMirror/config/config.js
+sudo nano MagicMirror/config/config.js
 ```
 Change the address IP to your Static IP allocation for the CT (no real NEED to delete the 127.x.x.x address that is there. I just wanted to remove variables when I was testing)
 
 Modify the ipWhitelist entry to give any number of devices on your network access to the server. You can list any number of, comma separated, individual IPs or IP Ranges, also dont forget the "" marks around your IP entries.
 
 ![config](https://user-images.githubusercontent.com/48180011/175962259-096cac65-7d14-4219-8c06-fb7056c5d459.png)
+
+<img width="1151" height="474" alt="image" src="https://github.com/user-attachments/assets/d2021371-f805-40b3-91c3-5eaf3515a324" />
+
 
 Good job on opening your server to your network!
 
