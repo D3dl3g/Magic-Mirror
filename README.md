@@ -60,7 +60,7 @@ you can do this before and after `usermod` to confirm changes have stuck
 Lastly we need to install the `sudo` & `curl` package as `root` to allow `sudo` & `curl` commands to be undertaken by the new user. 
 
 ```
-apt install sudo curl
+apt install sudo curl -y
 ```
 <img width="687" height="326" alt="image" src="https://github.com/user-attachments/assets/b5a96966-7a52-430d-938e-dac694d559d8" />
 
