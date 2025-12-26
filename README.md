@@ -128,6 +128,7 @@ Good job on opening your server to your network!
 Ensure you're in "~/MagicMirror", we need to use this command and wait for the terminal to show:-
 "Ready to go! Please Point your browser to..."
 ```
+cd ~/MagicMirror
 node serveronly
 ```
 <img width="839" height="858" alt="image" src="https://github.com/user-attachments/assets/4c9b416f-de30-49e4-aa8d-e79b36e05b2b" />
