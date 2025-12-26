@@ -34,7 +34,9 @@ apt update && apt upgrade -y
 ### Creating a User
 
 If using linux for anything its pretty solid practice to install packages and things via a user rather than root, creation of a user should be done as root, as it allows for groups to be set, especially the "sudo" ability of the user. since its a fresh container, the only user currently is root, so that solves a problem. you can call your user anything, i am using the user `mm` for this guide
-```adduser mm```
+```
+adduser mm
+```
 <img width="419" height="249" alt="image" src="https://github.com/user-attachments/assets/a9673e6a-c12c-4033-b787-4c67a67e5614" />
 
 After user creation, we add the `user` to the `sudo` group (which allows us to execute `sudo` commands when required) 
