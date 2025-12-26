@@ -18,7 +18,7 @@ Walkthroughs I am duplicating here (abeit with updated packages), incase sources
 
 ## LXC / Proxmox CT Server Setup
 
-**Proxmox 9.0.11, Create CT, Debian 13.1-2 (LXC base Image available from Proxmox)... 4GiB disk, 256MiB Mem & Swap , 1CPU Core, Unprivilege = Yes or No, Nesting = 1 (if "Unprivilege = no" after CT generation you will have to enable nesting), Network = enabled, Static IP preferable** 
+**Proxmox 9.0.11, Create CT, Debian 13.1-2 (LXC base Image available from Proxmox)... 4GiB disk, 512MiB Mem & Swap (this can be dropped to 256MiB after install for a lighter weight CT), 1CPU Core, Unprivilege = Yes or No, Nesting = 1 (if "Unprivilege = no" after CT generation you will have to enable nesting), Network = enabled, Static IP preferable** 
 
 <img width="506" height="297" alt="image" src="https://github.com/user-attachments/assets/70911176-1f64-42ee-a736-fd4f91a6d243" />
 
