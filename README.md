@@ -96,7 +96,7 @@ I, personally, use PM2 for easier process interaction. completely your choice, i
 
 To find out which IP your CT is on we need to ask it look for the IP tied to the interface you are using, in this example,`eth0@if5` so an IP of `192.168.0.227` at this point you can all so see its MAC address `bc:24:11:6d:ab:d4` copy and save these somewhere safe for later & we'll set up static IPs
 ```
-ip -a
+ip a
 ```
 <img width="839" height="277" alt="image" src="https://github.com/user-attachments/assets/468e9e94-2ae8-4bb1-ae26-a7fdd4f92716" />
 
