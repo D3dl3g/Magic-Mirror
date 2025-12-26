@@ -163,7 +163,7 @@ nano ~/MagicMirror/installers/mm-server.sh
 ```
 only need to give this a two liner
 ```
-cd ~/MagicMirror/
+cd ~/MagicMirror
 npm run server
 ```
 
