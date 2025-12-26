@@ -102,9 +102,9 @@ ip -a
 
 To get the Server to be viewable from a Client or any web browser on your network are now going to tell the server which IP to attach itself to and which IPs are allowed to access the server.
 ```
-sudo nano MagicMirror/config/config.js
+sudo nano ~/MagicMirror/config/config.js
 ```
-Change the address IP to your Static IP allocation for the CT (no real NEED to delete the 127.x.x.x address that is there. I just wanted to remove variables when I was testing)
+Change the address IP the IP we found earlier (for me i am happy to have `...0.227` as my static/reserved IP. No real NEED to delete the 127.x.x.x address that is there. I just wanted to remove variables when I was testing)
 
 Modify the ipWhitelist entry to give any number of devices on your network access to the server. You can list any number of, comma separated, individual IPs or IP Ranges, also dont forget the "" marks around your IP entries.
 
@@ -113,21 +113,25 @@ Modify the ipWhitelist entry to give any number of devices on your network acces
 <img width="1151" height="474" alt="image" src="https://github.com/user-attachments/assets/d2021371-f805-40b3-91c3-5eaf3515a324" />
 
 
+At this stage you will have to set your networks DHCP client to reserve the IP address. This ensures that your MM Server always appears in the same place and the DHCP does not "duplicate" the IP/give it out to a different device.
+Most routers are different in their process for DHCP reservation, but you will at least need the MAC and the desired IP.
+
+
 Good job on opening your server to your network!
 
 ------------
 
 ### Finally, start the server!!
 
-Ensure you're in "/root/MagicMirror", we need to use this command and wait for the terminal to show:-
+Ensure you're in "~/MagicMirror", we need to use this command and wait for the terminal to show:-
 "Ready to go! Please Point your browser to..."
 ```
 node serveronly
 ```
-![MMServerrunning](https://user-images.githubusercontent.com/48180011/175963138-93fae6b1-6bde-45d3-abae-35ee1ae5fef2.png)
+<img width="839" height="858" alt="image" src="https://github.com/user-attachments/assets/4c9b416f-de30-49e4-aa8d-e79b36e05b2b" />
+
 
 To exit the 'node serveronly' script just Ctrl+C back to CLI
-
 
 ------------
 
@@ -136,179 +140,49 @@ To exit the 'node serveronly' script just Ctrl+C back to CLI
 I wanted mine to auto login and run the script, for instance after a PVE reboot/shutdown, here's how i did it. N.B. make sure you have a password setup for @root for security reasons.
 
 ```
-systemctl edit container-getty@.service
+sudo systemctl edit container-getty@.service
 ```
 
-insert
+insert at Line 3
 ```
 [Service]
 ExecStart=
-ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud tty%I 115200,38400,9600 $TERM
+ExecStart=-/sbin/agetty --autologin mm --noclear --keep-baud tty%I 115200,38400,9600 $TERM
 ```
-![autologin](https://user-images.githubusercontent.com/48180011/175963211-7ba76e74-9ffa-452d-bd70-31f50d853e70.png)
+<img width="757" height="130" alt="image" src="https://github.com/user-attachments/assets/7d9a74e1-fbf4-43e3-be7a-6d0b860463a2" />
+
 
 ------------
 
-### **OPTIONAL** Autorun at CT Start & Restart on Crash
-For this we can use [PM2]([url](https://pm2.keymetrics.io/docs/usage/quick-start/)) a Process Manager that looks after restarts (enabled by default) and start-on-boot (using the autostart command).
+### Autorun PM2 at CT Start & Restart on Crash
+For this we can use [PM2]([url](https://pm2.keymetrics.io/docs/usage/quick-start/)) a Process Manager that was installed if chosen from the setup link above. 
+
+We need to give PM2 a .sh file to load in
 ```
-npm install pm2 -g && pm2 autostart
-```
-now we need to give PM2 a .sh file to load in
-```
-touch /root/MagicMirror/MagicMirror.sh && nano /root/MagicMirror/MagicMirror.sh
+nano ~/MagicMirror/installers/mm-server.sh
 ```
 only need to give this a two liner
 ```
-cd /root/MagicMirror/
+cd ~/MagicMirror/
 npm run server
 ```
-Tell PM2 to start your .sh file as a process and pm2 save to remember your choices.
+
 ```
-pm2 start /root/MagicMirror/MagicMirror.sh && pm2 save
+pm2 delete 0 && pm2 start ~/MagicMirror/installers/mm-server.sh && pm2 save
 ```
 
-Reboot to confirm server comes up with CT
+Reboot to confirm server comes up with CT with 
+```
+pm2 status
+```
+<img width="1121" height="107" alt="image" src="https://github.com/user-attachments/assets/4a34ea61-5223-4e53-b5a9-0b1286ce5e6c" />
 
-![serverstatus](https://user-images.githubusercontent.com/48180011/175962458-c95805e3-23de-4e5f-8670-ee21eee29e49.png)
 
 ------------
 ------------
 
-# Raspberry Pi 0/1/2/3/4 Client Setup
-**Now to set up the Client for attchment to your screen in you MagicMirror. Auto install Script is now available in my other Repo https://github.com/D3dl3g/MM-Client Script takes care of all of the install, you only need to give it a clean build of PiOS Lite Bullseye**
+# Raspberry Pi 0/1/2/3/4/5 Client Setup
 
-Set yourself up with a Pi0/Pi0 W/Pi0 WH/Pi0 2 W/Pi/Pi2/Pi3/Pi4, running PiOS Lite Bullseye (Later OSes dont appear to work Bookworm has some funky issues with the way i have the script working. im yet to do more testing to confirm/deny), have a WiFi Dongle attached (if "non-W" varient), SSH Enabled, and your wpa-supplicant set. 
-SSH into it with user 'pi',
-```
-sudo raspi-config
-```
-Select options "1 > S5 > B2" to run console autologin at boot
+Now outlined in my `MM-Client` repo. Auto installer for most rpis, I have confirmed Pi Zero W (a little slow, but works fine for a client), Zero 2W, 3 and 4. I do not own any others for testing. I'd expect Pi 1 & 2 to also struggle, mileage may vary.
 
-Aim of the game here is to keep as light as we can so this is about as stripped down as i could find a 'kiosk' based walkthrough.
-
-------------
-
-First off, you guessed it, house keeping
-```
-sudo apt update && sudo apt upgrade -y
-```
-
-Disable and remove swap file. Reduces read/write wear on SD cards, i still dont know why this is default on for RPi... imho theres really no need for it given the intended use of the SBC.
-
-First we stop the swapping service:
-```
-sudo service dphys-swapfile stop
-```
-
-Then we check if the swapping is switched off:
-```
-free
-```
-
-If the “Swap” line only has “0” values, we can disable the swap service.
-```
-sudo systemctl disable dphys-swapfile
-```
-
-
-Or remove completely.
-```
-sudo apt-get purge dphys-swapfile
-```
-
-A restart is not necessary.
-
-------------
-
-### X11
-
-We need a bunch of X11 stuff since we used Pi OS Lite, to give us a GUI output to our screen. Chromium which we can set up into a "kiosk" mode later and a windows manager because we have X11 and we have a browser, but we need something inbetween... like a little raspi sandwich... xautomation and unclutter help to keep your screen free of litter
-```
-sudo apt install --no-install-recommends -y xserver-xorg xinit x11-xserver-utils chromium-browser matchbox-window-manager unclutter
-```
-
-------------
-
-### Kiosk Window
-Now we setup the Kiosk display most of this is pretty uniform accross kiosk builds so im not explaining what all the triggers do.
-
-```
-nano ~/kiosk
-```
-and insert (dont forget to modify **MM SERVER IP** on the last line, you can use DNS Name or IP for your instance, for example http://MMServer.home:8080 or http://192.168.0.20:8080)
-```
-#!/bin/sh
-xset -dpms     # disable DPMS (Energy Star) features.
-xset s off     # disable screen saver
-xset s noblank # don't blank the video device
-matchbox-window-manager -use_titlebar no &
-unclutter &    # hide X mouse cursor unless mouse activated
-chromium-browser --display=:0 --kiosk --incognito --window-position=0,0 http://**MM SERVER IP**
-```
-
-Now we set the virtual terminal, so it displays properly on a physical screen.
-```
-nano ~/.bashrc
-```
-Insert at the bottom. this starts the X server, and runs the script in the previously created `kiosk` file
-`/pi/` will need to be replaced with whatever your user is. if your user is `pi` then this code addition will be fine
-```
-xinit /home/pi/kiosk -- vt$(fgconsole)
-```
-
-------------
-
-# Fin
-THATS IT. Your client is set up now!! (aside from a quick reboot)
-
-Connect it to a screen power it up and you should see an output from your server.
-
-------------
-------------
-
-### A couple of points worthy of note
-
-I experienced difficulty in getting 1080p output to my display, it defaulted to 1024x768 which, spacing wise, isnt... ideal. im not 100% sure why it didnt pick the monitor up automatically. so if you do come accross this heres a solution that worked for me.
-
-Whilst still in the SSH window... but with display connected.
-
-Find connected display options from EDID
-```
-DISPLAY=:0 xrandr --verbose
-```
-Choose your desired resolution from the supported list (no need to worry about framerate, I'm lead to believe it can get messy, fast)
-
-setting for **Display :0**(Primary Display), i want  **xrandr** to control my screen  **-s**ize, and i want it to be **1920x1080**, Type:
-```
-DISPLAY=:0 xrandr -s 1920x1080
-```
-Go and check your ouput on your display, it should now be the resolution you desire.
-sadly on reboot it wont stay that way, so we want to set it to apply the new setting every time it boots. 
-
-------------
-
-
-looking back at the verbose output First 2 lines of  the output it should look alittle something like this:
-
-`** Screen 0 **: minimum 320 x 200, current 1024 x 768, maximum 2048 x 2048`
-
-`** HDMI-1 ** connected primary 1024x768+0+0 (0x53) normal (normal left inverted right x axis y axis) 797mm x 334mm`
-
-Note "**Screen ***" and "**HDMI-***"
-because now we need to create/modify xorg.conf. Chances are itll be a create because it doesnt come, out of the box, with any parameters set. From what i have read, on the internet, be it true or not,  /etc/X11/xorg.conf will be, one of, if not, THE LAST file location that X11 will look for a config and its a pretty short dir tree to type, so may as well put config file there, right!
-```
-sudo nano /etc/X11/xorg.conf
-```
-Identifier and Device are the figures you noted from your --verbose output earlier. If theyre different than mine, adjust as required.
-```
-Section "Screen"
-        Identifier "Screen 0"
-        Device "HDMI-1"
-        SubSection "Display"
-                Modes "1920x1080"
-        EndSubSection
-EndSection
-```
-
-Ctrl+X, Y, Enter, to Save.  aaaand reboot. 
+https://github.com/D3dl3g/MM-Client
