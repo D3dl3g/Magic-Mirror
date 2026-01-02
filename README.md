@@ -57,6 +57,13 @@ Once rebooted, head to the Static IP or the IP of your CT with port `8080` speci
 
 Thats it Youre done! youve spooled a base instance of MM, running in "Server Mode" on Proxmox. Now it up to you to customise it in any way that meets your needs. 
 
+<img width="812" height="1143" alt="image" src="https://github.com/user-attachments/assets/9035327a-9712-4ad9-be8f-4267e1f1fdb3" />
+
+<img width="1044" height="723" alt="image" src="https://github.com/user-attachments/assets/3ad4cb86-9126-4c05-8820-7341bcef36c3" />
+
+<img width="1721" height="1317" alt="image" src="https://github.com/user-attachments/assets/023d6cdb-0a23-41f1-a3ea-5380618a6830" />
+
+
 ------------
 ------------
 ------------
