@@ -24,6 +24,45 @@ Walkthroughs I am duplicating here (abeit with updated packages), incase sources
 
 
 ------------
+------------
+------------
+AUTO INSTALLER NOW AVAILABLE
+
+
+I took the time to "Vibe Code" with Kagi, using Qwen3-235B(Reasoning) to put together an auto installer for those who "Just want a one liner"
+
+Sadly i cant automate CT Generation for this one liner to be ran in PVE CLI, so youll still have to create the CT outlined above.
+as for the "one liner"... 
+
+as `root`
+```
+apt update && apt upgrade -y && apt install -y curl && \
+curl -s https://raw.githubusercontent.com/D3dl3g/Magic-Mirror/main/server-setup.sh -o /tmp/mm-setup.sh && \
+chmod +x /tmp/mm-setup.sh && \
+/tmp/mm-setup.sh
+```
+
+this will update your CT, install `curl` so that the script can be ran from this repo. 
+
+It is an interactive script, you will have to hold its hand and supply the info needed. 
+
+it will ask for User & Password, and if you want to set a static IP. Then it will install MagicMirror from this repo https://github.com/sdetweil/MagicMirror_scripts.
+Towards the end  it will ask about screensaver disable and PM2 setup. Screensaver disable wont matter which option you pick because youll be running a server only and not a client. 
+I advise to use PM2 just because it makes life a little easier so say yes to that prompt. 
+then it will ask you if you want to update the process name... this option again, doesnt matter as this script will remove that entry and set up its own "server only" PM2 script.
+
+Once you get a setup complete output the script will reboot after a 30sec timer. you can `Ctrl-C` out of this if diseired. I would advise to let it reboot, to confirm it all works (this also deletes the file in the `/tmp/` directory, if using Debian). 
+
+Once rebooted, head to the Static IP or the IP of your CT with port `8080` specified.
+
+Thats it Youre done! youve spooled a base instance of MM, running in "Server Mode" on Proxmox. Now it up to you to customise it in any way that meets your needs. 
+
+------------
+------------
+------------
+
+Manual Install, without Script is outlined Below
+------------
 
 First we'll do an update of the container. 
 ```
